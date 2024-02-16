@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="jquery.js"></script>
+    <script src="socket.io/socket.io.js"></script>
+    <script src="highcharts.js"></script>
+    <script src="export-data.js"></script>
+    <script src="accessibility.js"></script>
+    <script src="xuly.js"></script>
+    <link rel="stylesheet" href="home.css">
+    <title>Smart home</title>
+</head>
+
+<body>
+    <div class="main-title">
+        Smart Home
+    </div>
+    <div class="main-content">
+        <div class="left-block">
+            <div class="element-left">
+                <div class="element-block" style="background-image: linear-gradient(90deg, rgb(249, 5, 21), rgb(247, 106, 129));;">
+                    <img class="element-icon" src="temprature.png" alt="">
+                    <div class="element-text">
+                        <p class="right5px">Nhiệt độ: </p>
+                        <p id="currentTemp"></p>
+                        <p class="tl">°C</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="element-left">
+                <div class="element-block" style="background-image: Radial-gradient(rgb(205, 199, 253),rgb(134, 132, 246),rgb(79, 58, 234),rgb(6, 3, 196))">
+                    <img class="element-icon" src="drop.png" alt="">
+                    <div class="element-text">
+                        <p class="right5px">Độ ẩm: </p>
+                        <p id="currentHumi"></p>
+                        <p class="tl">%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="element-left lightt">
+                <div class="element-block" style="background-image: linear-gradient(-90deg, rgb(253, 232, 4), rgb(235, 247, 146));">
+                    <img class="element-icon" src="sunny.png" alt="">
+                    <div class="element-text">
+                        <p class="right5px">Ánh sáng: </p>
+                        <p id="currentLight"></p>
+                        <p class="tl">Lux</p>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="right-block">
+            <div class="chart">
+                <figure class="highcharts-figure">
+                    <div id="container"></div>
+                </figure>
+            </div>
+            
+            <div class="control">
+                <div class="livingroom-control">
+                    <div class="element-container">
+                        <div id="livingrom-light" class="element-control appliances turn-off1">
+                            <button class="btn0 ct1" onclick="ledOn1()" >ON</button>
+                            <button class="btn0 ct2" onclick="ledOff1()">OFF</button>
+                           
+                            <img class="element-icon-control1" src="bongden.jpg" alt="">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="bedroom-control">
+                    
+                        <div class="box-img">
+                            <img class="img-bulb2" src="bongden.jpg" alt="">
+                        </div>
+                        <div class="btn123">
+                            <div class="btn1"></div>
+                            <button type="button" class="btn-on2" onclick="ledOn()" >ON</button>
+                            <button type="button" class="btn-off2" onclick="ledOff()">OFF</button>
+                        </div>
+                    
+                
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+<script type="text/javascript">
+   
+    var chart = Highcharts.chart('container', {
+        chart: {
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'Đồ thị biểu diễn Nhiệt độ - Độ ẩm - Ánh sáng'
+        },
+
+        xAxis: [{
+            categories: [],
+            tickWidth: 1,
+            tickLength: 20
+        }],
+        yAxis: [{ 
+            labels: {
+                format: '{value}',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+            title: {
+                text: 'Number of Employees',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+        }],
+
+        series: [{
+            name: 'Độ ẩm',
+            // type: 'column',
+            type: 'spline',
+            data: [],
+            tooltip: {
+                valueSuffix: '%'
+            },
+            // color: "yellow"
+        }, {
+            name: 'Nhiệt độ',
+            type: 'spline',
+            data: [],
+            tooltip: {
+                valueSuffix: '°C'
+            }
+        }, {
+            name: 'Ánh sáng',
+            type: 'spline',
+            data: [],
+            tooltip: {
+                valueSuffix: 'lux'
+            }
+        }
+    ],
+    });
+
+    socket.on("server-send-humi_graph", function (data) {
+        chart.series[0].setData(data);
+    });
+    
+    socket.on("server-send-temp_graph", function (data) {
+        chart.series[1].setData(data);
+    });
+
+    socket.on("server-send-light_graph", function (data) {
+        chart.series[2].setData(data);
+    });
+    
+    // socket.on("server-send-date_graph", function (data) {
+    //     chart.xAxis[0].setCategories(data);
+    // });
+
+   
+    var timeDisplay = document.getElementById("time");
+
+    function refreshTime() {
+        var dateString = new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+        var formattedString = dateString.replace(", ", " - ");
+        timeDisplay.innerHTML = formattedString;
+    }
+
+    setInterval(refreshTime,1500);
+ 
+</script>  
+</body>
+</html>
